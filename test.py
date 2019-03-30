@@ -11,9 +11,9 @@ b = Archive(ARCHIVE_DIR + "130.149.150.152_0012.txt")
 #b.plotCabinInfo()
 #plt.show()
 
-temp = a[...][a[I_EVENT_SOURCE] == S_CONNECTION_CHECK]
+temp = b[...][b[I_ERROR_PHASE] == E_RED]
 
-temp2 = a.getConnectionCheck()
+temp2 = temp.getConnectionCheck()
 
 print(temp.size)
 print(temp2.size)
