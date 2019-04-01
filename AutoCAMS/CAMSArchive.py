@@ -94,6 +94,10 @@ class Archive(np.ndarray):
       """
       Get the script from AutoCAMS used to control when the 
       faults were added within the simulaiton.
+      
+      Return
+      ------
+         string - XML script name used for this run.
       """
       
       # Cache result
@@ -123,7 +127,7 @@ class Archive(np.ndarray):
       ------
          NpArray with periodic entries only      
       """
-      return self[...][self[I_LOG_TYPE] == ENTRY_TYPE_PERIODIC]
+      return self[...][self[I_LOG_TYPE] == EntryType.PERIODIC]
     
       
    def getAperiodic(self):
@@ -137,7 +141,7 @@ class Archive(np.ndarray):
       ------
          NpArray with aperiodic entries only
       """
-      return self[...][self[I_LOG_TYPE] == ENTRY_TYPE_APERIODIC]
+      return self[...][self[I_LOG_TYPE] == EntryType.APERIODIC]
 
       
    def getMetRange(self):
@@ -158,8 +162,31 @@ class Archive(np.ndarray):
          endTime   = self[I_MET][-1]
       return (startTime, endTime)
 
-      
-   def getConnectionCheck(self):
-      return self[...][self[I_EVENT_SOURCE] == S_CONNECTION_CHECK]
 
+   def getIter(self):
+      """
+      Get iterator to traverse this archive. 
+      
+      Sets flag "refs_ok" to enable iteration of reference types
+      like this object array.
+      
+      Return
+      ------
+         iterator - Iterable object
+      """
+      return np.nditer(self, flags=["refs_ok"])
+      
+   def isMatch(self, i, source=None, desc=None, error=None):
+      match = True
+      if(i >= self.size):
+         match = False
+      elif(source is not None and self[i][I_EVENT_SOURCE] != source):
+         match = False
+      elif(desc is not None and self[i][I_EVENT_DESC] != desc):
+         match = False
+      elif(error is not None and self[i][I_ERROR_PHASE] != error):
+         match = False
+      
+      return match
+      
    

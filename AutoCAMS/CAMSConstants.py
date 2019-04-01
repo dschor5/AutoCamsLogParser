@@ -1,3 +1,5 @@
+from enum import Enum, unique
+
 # Entry types used in numpy arrays. 
 # Changes affect archives globally.
 ENTRY_TYPE_STR = 'O'    # Object/string
@@ -29,27 +31,27 @@ I_OSMET_FINE   = 'OSMET_FINE'     #
 
 # Differentiate whether it was a periodic task by the software or an aperiodic task 
 # where the operator was doing something.
-ENTRY_TYPE_PERIODIC  = "CAMS_SYSTEM"
-ENTRY_TYPE_APERIODIC = "OPERATOR"
+class EventType():
+   PERIODIC  = "CAMS_SYSTEM"
+   APERIODIC = "OPERATOR"
 
-
-
-
-S_A_CAMS_SYSTEM    = "ACamsSystem"
-S_GRAPH_MONITOR    = "graphic_monitor"
-S_OX_TANK          = "ox_tank"
-S_OX_SECOND        = "ox_second"
-S_NI_TANK          = "ni_tank"
-S_NI_SECOND        = "ni_second"
-S_MIXER            = "mixer"
-S_POSSIBLE_FLOW    = "possible_flow"
-S_CONNECTION_CHECK = "connection_check"
-S_LOGGING_TASK     = "logging_task"
-S_DETECTOR         = "detector"
-S_ERROR_GENERATOR  = "ErrorGenerator"
-S_AFIRA_LOA_1      = "Afira_loa_1"
-S_AFIRA_LOA_4      = "Afira_loa_4"
-S_AFIRA_LOA_6      = "Afira_loa_6"
+# Source descriptions. 
+class EventSource():
+   A_CAMS_SYSTEM    = "CamsFirst"
+   GRAPH_MONITOR    = "graphic_monitor"
+   OX_TANK          = "ox_tank"
+   OX_SECOND        = "ox_second"
+   NI_TANK          = "ni_tank"
+   NI_SECOND        = "ni_second"
+   MIXER            = "mixer"
+   POSSIBLE_FLOW    = "possible_flow"
+   CONNECTION_CHECK = "connection_check"
+   LOGGING_TASK     = "logging_task"
+   DETECTOR         = "detector"
+   ERROR_GENERATOR  = "ErrorGenerator"
+   AFIRA_LOA_1      = "Afira_loa_1"
+   AFIRA_LOA_4      = "Afira_loa_4"
+   AFIRA_LOA_6      = "Afira_loa_6"
 
 
 #D_FLOW = {"HIGH", "MEDIUM", "STANDARD"}
@@ -78,42 +80,51 @@ S_AFIRA_LOA_6      = "Afira_loa_6"
 #temp_open
 #humi_open
 
-D_OPEN           = "open"
-D_ICON_APPEARS   = "icon_appears"
-D_ICON_CONFIRMED = "confirmed"
-D_ICON_CLOSED    = "icon_closed"
-D_ICON_MISSED    = "missed"
-D_CO2_WERT       = "CO2_wert"
-D_ERROR          = "error"
-D_REPAIR         = "repair: + error"
-D_DELAYED        = "error + delayed"
+class EventDesc():
+   OPEN           = "open"
+   ICON_APPEARS   = "icon_appears"
+   ICON_CONFIRMED = "confirmed"
+   ICON_CLOSED    = "icon_closed"
+   PHASE_CHANGE   = "phase changed"
+   LOGGING_MISSED = "missed"
+   LOGGING_EMPTY  = "empty"
+   CO2_WERT       = "CO2_wert"
+   ERROR          = "error"
+   REPAIR         = "repair: + error"
+   DELAYED        = "error + delayed"
+   INJECTED       = "injected"
 
 
 # Error state
-E_RED   = "RED"
-E_GREEN = "GREEN"
+class ErrorState():
+   RED          = "RED"
+   RED_REPAIR   = "RED_REPAIR"
+   RED_NO_ERROR = "RED_NO_ERROR"
+   GREEN        = "GREEN"
+   GREEN_ERROR  = "GREEN_ERROR"
 
-LIMIT_CO2_RED_LOW = 0.1
-LIMIT_CO2_GREEN_LOW = 0.2
-LIMIT_CO2_GREEN_HIGH = 0.6
-LIMIT_CO2_RED_HIGH = 0.8
+class Limits():
+   CO2_RED_LOW = 0.1
+   CO2_GREEN_LOW = 0.2
+   CO2_GREEN_HIGH = 0.6
+   CO2_RED_HIGH = 0.8
 
-LIMIT_O2_RED_LOW = 19.0
-LIMIT_O2_GREEN_LOW = 19.6
-LIMIT_O2_GREEN_HIGH = 20
-LIMIT_O2_RED_HIGH = 20.5
+   O2_RED_LOW = 19.0
+   O2_GREEN_LOW = 19.6
+   O2_GREEN_HIGH = 20
+   O2_RED_HIGH = 20.5
 
-LIMIT_P_RED_LOW = 0.970
-LIMIT_P_GREEN_LOW = 0.990
-LIMIT_P_GREEN_HIGH = 1.025
-LIMIT_P_RED_HIGH = 1.040
+   P_RED_LOW = 0.970
+   P_GREEN_LOW = 0.990
+   P_GREEN_HIGH = 1.025
+   P_RED_HIGH = 1.040
 
-LIMIT_T_RED_LOW = 18.5
-LIMIT_T_GREEN_LOW = 19.5
-LIMIT_T_GREEN_HIGH = 22.0
-LIMIT_T_RED_HIGH = 23.0
+   T_RED_LOW = 18.5
+   T_GREEN_LOW = 19.5
+   T_GREEN_HIGH = 22.0
+   T_RED_HIGH = 23.0
 
-LIMIT_H_RED_LOW = 36.5
-LIMIT_H_GREEN_LOW = 38.0
-LIMIT_H_GREEN_HIGH = 42.0
-LIMIT_H_RED_HIGH = 44.0
+   H_RED_LOW = 36.5
+   H_GREEN_LOW = 38.0
+   H_GREEN_HIGH = 42.0
+   H_RED_HIGH = 44.0
