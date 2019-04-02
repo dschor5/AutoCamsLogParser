@@ -34,3 +34,6 @@ Notes:
    proportion of all system parameters accessed immediately necessary to cross-check a
    given diagnosis unambiguously
    
+9) Has Automation Failure
+   0 = No automation failure
+   1 = Automation failure
