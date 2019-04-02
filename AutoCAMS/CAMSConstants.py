@@ -90,7 +90,7 @@ class EventDesc():
    LOGGING_EMPTY  = "empty"
    CO2_WERT       = "CO2_wert"
    ERROR          = "error"
-   REPAIR         = "repair: + error"
+   REPAIR         = "repair"
    DELAYED        = "error + delayed"
    INJECTED       = "injected"
 

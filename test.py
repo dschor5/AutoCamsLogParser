@@ -10,6 +10,7 @@ c = Archive(ARCHIVE_DIR + "192.168.7.8_0000.txt")
 
 count = 0
 faultType = None
+repairType = []
 startErrorIndex = None
 stopErrorIndex  = None
 conCheckTotalTime = 0.0
@@ -20,19 +21,19 @@ recording       = False
 for i in range(c.size):
 
    curr = c[i]
-   
+
    # Find name of fault injected
    if(curr[I_EVENT_DESC].find(EventDesc.INJECTED) >= 0):
-      faultType = curr[I_EVENT_DESC]
+      faultType = curr[I_EVENT_DESC].split(" ")[1]
 
+   # Record any repair orders sent
+   if(curr[I_EVENT_DESC].find(EventDesc.REPAIR) >= 0):
+      temp = curr[I_EVENT_DESC].split(" ")[1]
+      if(temp != "task"):
+         repairType.append(temp)
+   
    # Find index of GREEN_ERROR at the start of a fault.
    if(c.isMatch(i, EventSource.A_CAMS_SYSTEM, EventDesc.PHASE_CHANGE, ErrorState.GREEN_ERROR)):
-      print("isMatch -> recording = True")
-   
-   if(EventSource.A_CAMS_SYSTEM == curr[I_EVENT_SOURCE] and 
-      EventDesc.PHASE_CHANGE == curr[I_EVENT_DESC] and 
-      ErrorState.GREEN_ERROR == curr[I_ERROR_PHASE]):
-      print("otherMatch -> recording = True")
       recording = True
       startErrorIndex = i
 
@@ -62,6 +63,7 @@ for i in range(c.size):
       count = count + 1
       print("ENTRY #" + str(count))
       print("- Fault: " + str(faultType))
+      print("- Repair: " + str(repairType))
       print("- Time in RED: " + str(c[stopErrorIndex][I_OSMET] - c[startErrorIndex][I_OSMET]))
       print("- Mean Response Time: " + str(conCheckTotalTime / conCheckCount))
    
@@ -73,6 +75,8 @@ for i in range(c.size):
       stopErrorIndex = None
       conCheckIndex = None
       conCheckCount = 0
+      faultType = None
+      repairType = []
       conCheckTotalTime = 0.0
       
 
