@@ -11,6 +11,8 @@ Notes:
      order was issued. This measure was used to assess speed of fault identification
      performance.
    * FIT = Correct Repair time - Fault time 
+      * iCorrectRepair
+      * iFaultTime
    
 3) Out of Target Error
    - Was defined as the time (in seconds) the most critical system parameter (oxygen) 
@@ -25,12 +27,13 @@ Notes:
 5) Prospective memory performance
    - Proportion of entries of carbon dioxide records that were provided within the 
      correct time interval (i.e., full minute ±5 s)
-   * 
+      * 
    
 6) Automation Verification Time
    - Time interval (in seconds) from the appearance of the master warning until
      sending of a first repair order, regardless of whether this order was correct
    * AVT = First Repair Time - Fault Time
+      * iFirstRepair
    
 7) Automation Verification Sampling of Relevant Parameters
    - Proportion of all system parameters accessed that, in principal, were considered 

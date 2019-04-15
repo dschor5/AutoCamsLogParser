@@ -113,141 +113,157 @@ class Archive(np.ndarray):
             # Catch errors if it fails to open the file.
             raise Exception("Could not read file: ", self.__filename)
       return self.__script
-   
-   
-   def getPeriodic(self):
-      """ 
-      Get all periodic entries in the archive.
-      
-      Periodic entries are defined as those that are logged 
-      automatically by the system at 1Hz. In contrast, 
-      aperiodic entries are those from user interactions.
-      
-      Return
-      ------
-         NpArray with periodic entries only      
-      """
-      return self[...][self[I_LOG_TYPE] == EntryType.PERIODIC]
-    
-      
-   def getAperiodic(self):
-      """ 
-      Get all aperiodic entries in the archive.
-      
-      Aperiodic entries are those caused by user interactions. 
-      In contrast, periodic entries are logged at 1Hz by the system.
-      
-      Return
-      ------
-         NpArray with aperiodic entries only
-      """
-      return self[...][self[I_LOG_TYPE] == EntryType.APERIODIC]
 
       
-   def getMetRange(self):
+   def parseData(self, prefix):
       """
-      Get the MET range for the file. 
-      
-      A touple containing (None, None) is returned if the archive
-      is too short and did not contain any entries. 
-      
-      Return
-      ------
-         touple - MET for start and end time.
-      """
-      startTime = None
-      endTime   = None
-      if(len(self) > 0):
-         startTime = self[I_MET][0]
-         endTime   = self[I_MET][-1]
-      return (startTime, endTime)
-
-
-   def getIter(self):
-      """
-      Get iterator to traverse this archive. 
-      
-      Sets flag "refs_ok" to enable iteration of reference types
-      like this object array.
-      
-      Return
-      ------
-         iterator - Iterable object
-      """
-      return np.nditer(self, flags=["refs_ok"])
-
-      
-   def isMatch(self, i, source=None, desc=None, error=None):
-      """
-      Return True if the i^th row has the matching source, desc, and error
-      defined in the parameters.  
+      <INSERT DESCRIPTION>
       
       Params
       ------
-         i      - Int index for row to check
-         source - String at I_EVENT_SOURCE field and belonging to EventSource class.
-                  Ignore check if the parameter is None.
-         desc   - String at I_EVENT_DESC field and belonging to EventDesc class.
-                  Ignore check if the parameter is None.         
-         error  - String at I_ERROR_PHASE field and belonging to ErrorState class.
-                  Ignore check if the parameter is None.         
-         
+         prefix - Array with missionId, userId, sessionId, hasFault
+      
       Return
       ------
-         boolean - True if the i^th row matches the source, desc, and error 
-                   fields defined in the parameters. 
+         string - Comma separated metrics extracted for this session.
       """
+      COMMA = ","
       
-      # Default value is match = True (found).
-      match = True 
+      faultIndex        = 0
+      iRed              = None   # Index when fault is introduced
+      iGreen            = None   # Index when fault is resolved
+      iFirstRepair      = None   # Index when first repair order is sent
+      iCorrectRepair    = None   # Index when correct repair order is sent
+      faultInjected     = None   # Fault injected into the system
+      faultDetected     = None   # Fault detected by AFIRA
+      repairOrders      = []     # Repair orders sent
+      paramsVerified    = set()  # Set of parameters verified
+      conCheckTotalTime = 0      # Total time elapsed for connection checks
+      conCheckCount     = 0      # Number of connection checks
+      conCheckIndex     = 0      # Index of last connection check
+      logTotal          = 0      # Number of log entries entered
+      logMissed         = 0      # Number of log entries missed
       
-      # Check bounds on the array size.
-      if(i >= self.size):
-         match = False
+      output = ""
+      
+      # Iterate through the whole archive
+      for i in range(self.size):
+         curr = self[i]
          
-      else:
-         
-         # Check event source
-         if((source is not None) and (self[i][I_EVENT_SOURCE] != source)):
-            match = False
+         # Identify faults inserted
+         if(EventSource.AFIRA in curr[I_EVENT_SOURCE] and ":" in curr[I_EVENT_DESC]):
+            faultInjected, faultDetected = curr[I_EVENT_DESC].split(":")
+            faultIndex += 1
             
-         # Check event description
-         if((desc is not None) and (self[i][I_EVENT_DESC] != desc)):
-            match = False
+         # Identify all repair orders sent
+         if(EventDesc.REPAIR in curr[I_EVENT_DESC]):
+            temp = curr[I_EVENT_DESC].split(" ")[1]
+            if(temp != "task"):
+               repairOrders.append(temp)
             
-         # Check error phase
-         if((error is not None) and (self[i][I_ERROR_PHASE] != error)):
-            match = False
-      
-      return match
-      
-      
-   def isParamCheck(self, i):
-      """
-      Return True if the i^th row correspond to the user checking a parameter.
-      
-      Params
-      ------
-         i  - Int index for row to check
+               # Store index of first repair set
+               if(len(repairOrders) == 1):
+                  iFirstRepair = i
+            
+            # Store index when correct repair was sent. 
+            if(faultInjected is not None and temp == faultInjected):
+               iCorrectRepair = i
          
-      Return
-      ------
-         boolean - True if the i^row is checking parameters
-      """
+         # Find index of RED (start of fault)
+         if(EventDesc.PHASE_CHANGE == curr[I_EVENT_DESC] and ErrorState.RED == curr[I_ERROR_PHASE]):
+            iRed = i
+            
+         # Find index of RED_NO_ERROR (end of fault)
+         if(EventDesc.PHASE_CHANGE == curr[I_EVENT_DESC] and ErrorState.RED_NO_ERROR == curr[I_ERROR_PHASE]):
+            iGreen = i
+         
+         # Capture set of all parameters verified while the fault is present. 
+         if(iRed is not None):
+            if(curr[I_EVENT_SOURCE] in EventSource.FLOW_MONITOR):
+               paramsVerified.update([curr[I_EVENT_SOURCE]])
+            if(curr[I_EVENT_SOURCE] == EventSource.GRAPH_MONITOR):
+               paramsVerified.update([curr[I_EVENT_DESC]])
+         
+         # Connection checks
+         if(iRed is not None):
+            if(curr[I_EVENT_SOURCE] == EventSource.CONNECTION_CHECK):
+               if(curr[I_EVENT_DESC] == EventDesc.ICON_APPEARS):
+                  conCheckIndex = i
+               else:
+                  conCheckTotalTime += (curr[I_OSMET] - self[conCheckIndex][I_OSMET])
+                  conCheckCount += 1
+                  
+         # Logging tasks
+         if(iRed is not None):
+            if(curr[I_EVENT_SOURCE] == EventSource.LOGGING_TASK):
+               if(curr[I_EVENT_DESC] == EventDesc.LOGGING_MISSED or curr[I_EVENT_DESC] == EventDesc.LOGGING_EMPTY):
+                  logMissed += 1
+               logTotal += 1
+         
+         # Find index of GREEN (finished processing fault -> record entry)
+         if(EventDesc.PHASE_CHANGE == curr[I_EVENT_DESC] and ErrorState.GREEN == curr[I_ERROR_PHASE]):
+            
+            # Capture output
+            output += COMMA.join(map(str, prefix)) + COMMA
+            
+            # Fault index
+            output += str(faultIndex) + COMMA
+            
+            # Has fault?
+            if(faultInjected == faultDetected):
+               output += "0" + COMMA
+            else:
+               output += "1" + COMMA
+               
+            # Number of repair orders set
+            output += str(len(repairOrders)) + COMMA
+            
+            # Fault Identification Time (FIT)
+            deltaTime = self[iCorrectRepair][I_OSMET] - self[iRed][I_OSMET]
+            output += str(deltaTime) + COMMA 
+            
+            # Automation Verification Time (AVT)
+            deltaTime = self[iFirstRepair][I_OSMET] - self[iRed][I_OSMET]
+            output += str(deltaTime) + COMMA
+            
+            # Automation Verification Sampling of Relevant Parameters (AVS-RP)
+            limitSet = paramsVerified.intersection(PARAMS_RELEVANT)
+            temp = float(len(limitSet)) / len(PARAMS_RELEVANT)
+            output += "{0:.3f}".format(temp) + COMMA
+            
+            # Automation Verification Sampling of Necessary Parameters (AVS-NP)
+            limitSet = paramsVerified.intersection(PARAMS_NECESSARY[faultInjected])
+            temp = float(len(limitSet)) / len(PARAMS_NECESSARY[faultInjected])
+            output += "{0:.3f}".format(temp) + COMMA
+            
+            # Connection check
+            if(conCheckCount > 0):
+               output += "{0:.3f}".format(float(conCheckTotalTime) / conCheckCount) + COMMA
+            else:
+               output += "{0:.3f}".format(0.0) + COMMA
+               
+            # Logging task
+            if(logTotal > 0):
+               output += "{0:.3f}".format(float(logTotal - logMissed) / logTotal) + COMMA
+            else:
+               output += "{0:.3f}".format(0.0) + COMMA
+            
+            output += "\n"
+            
+            # Reset all variables
+            iRed              = None
+            iGreen            = None
+            iFirstRepair      = None
+            iCorrectRepair    = None
+            faultInjected     = None
+            faultDetected     = None
+            repairOrders      = []  
+            paramsVerified    = set()
+            conCheckTotalTime = 0
+            conCheckCount     = 0
+            conCheckIndex     = 0 
+            logTotal          = 0
+            logMissed         = 0
+            
+      return output
       
-      # Default value is match = True (is checking param)
-      match = True
-      
-      if(i >= self.size):
-         match = False
-      
-      else:
-         match = ("open" in self[i][I_EVENT_DESC] and 
-            (self[i][I_EVENT_SOURCE] == EventSource.GRAPH_MONITOR or
-            self[i][I_EVENT_SOURCE] == EventSource.OX_TANK or
-            self[i][I_EVENT_SOURCE] == EventSource.OX_SECOND or
-            self[i][I_EVENT_SOURCE] == EventSource.NI_TANK or
-            self[i][I_EVENT_SOURCE] == EventSource.NI_SECOND or 
-            self[i][I_EVENT_SOURCE] == EventSource.MIXER))
-      
-      return match

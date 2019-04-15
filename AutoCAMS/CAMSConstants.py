@@ -29,6 +29,29 @@ I_LOG_TYPE     = 'LOG_TYPE'       # Event: CAMS_SYSTEM (periodic) or OPERATOR (a
 # Additional field names for common computations
 I_OSMET_FINE   = 'OSMET_FINE'     # 
 
+PARAMS_NECESSARY = {
+   "OXYGEN_VALVE_LEAK"               : set(["ox_open", "ox_tank_display", "ox_second"]),
+   "OXYGEN_VALVE_BLOCK"              : set(["ox_open", "ox_tank_display", "ox_second"]),
+   "OXYGEN_VALVE_STUCK_OPEN"         : set(["ox_open", "ox_tank_display", "ox_second", "ni_open"]),
+   "NITROGEN_VALVE_LEAK"             : set(["ni_open", "ni_tank_display", "ni_second"]),
+   "NITROGEN_VALVE_BLOCK"            : set(["ni_open", "ni_tank_display", "ni_second"]),
+   "NITROGEN_VALVE_STUCK_OPEN"       : set(["ni_open", "ni_tank_display", "ni_second", "ox_open"]),
+   "OXYGEN_SENSOR_STARTS_UPPER_TH"   : set(["ox_open", "ox_tank_display", "ni_open"]),
+   "OXYGEN_SENSOR_STARTS_LOWER_TH"   : set(["ox_open", "ox_tank_display", "ni_open"]),
+   "PRESSURE_SENSOR_STARTS_UPPER_TH" : set(["ox_open", "ni_tank_display", "ni_open"]),
+   "PRESSURE_SENSOR_STARTS_LOWER_TH" : set(["ox_open", "ni_tank_display", "ni_open"]),
+   "MIXER_BLOCK"                     : set(["ni_open", "ox_open", "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer"])
+   }
+
+PARAMS_RELEVANT = set([
+   "ni_open", "ox_open", "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer"
+   ])
+   
+PARAMS_TOTAL = set([
+   "ni_open", "ox_open", "co_open", "temp_open", "humid_open", 
+   "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer"
+   ])
+
 # Differentiate whether it was a periodic task by the software or an aperiodic task 
 # where the operator was doing something.
 class EventType():
@@ -39,19 +62,13 @@ class EventType():
 class EventSource():
    A_CAMS_SYSTEM    = "CamsFirst"
    GRAPH_MONITOR    = "graphic_monitor"
-   OX_TANK          = "ox_tank"
-   OX_SECOND        = "ox_second"
-   NI_TANK          = "ni_tank"
-   NI_SECOND        = "ni_second"
-   MIXER            = "mixer"
+   FLOW_MONITOR     = ["ox_tank", "ox_second", "ni_tank", "ni_second", "mixer"]
    POSSIBLE_FLOW    = "possible_flow"
    CONNECTION_CHECK = "connection_check"
    LOGGING_TASK     = "logging_task"
    DETECTOR         = "detector"
    ERROR_GENERATOR  = "ErrorGenerator"
-   AFIRA_LOA_1      = "Afira_loa_1"
-   AFIRA_LOA_4      = "Afira_loa_4"
-   AFIRA_LOA_6      = "Afira_loa_6"
+   AFIRA            = "AfiraSystem6"
 
 
 class EventDesc():
