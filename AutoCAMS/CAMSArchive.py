@@ -175,18 +175,79 @@ class Archive(np.ndarray):
          iterator - Iterable object
       """
       return np.nditer(self, flags=["refs_ok"])
+
       
    def isMatch(self, i, source=None, desc=None, error=None):
-      match = True
+      """
+      Return True if the i^th row has the matching source, desc, and error
+      defined in the parameters.  
+      
+      Params
+      ------
+         i      - Int index for row to check
+         source - String at I_EVENT_SOURCE field and belonging to EventSource class.
+                  Ignore check if the parameter is None.
+         desc   - String at I_EVENT_DESC field and belonging to EventDesc class.
+                  Ignore check if the parameter is None.         
+         error  - String at I_ERROR_PHASE field and belonging to ErrorState class.
+                  Ignore check if the parameter is None.         
+         
+      Return
+      ------
+         boolean - True if the i^th row matches the source, desc, and error 
+                   fields defined in the parameters. 
+      """
+      
+      # Default value is match = True (found).
+      match = True 
+      
+      # Check bounds on the array size.
       if(i >= self.size):
          match = False
-      elif(source is not None and self[i][I_EVENT_SOURCE] != source):
-         match = False
-      elif(desc is not None and self[i][I_EVENT_DESC] != desc):
-         match = False
-      elif(error is not None and self[i][I_ERROR_PHASE] != error):
-         match = False
+         
+      else:
+         
+         # Check event source
+         if((source is not None) and (self[i][I_EVENT_SOURCE] != source)):
+            match = False
+            
+         # Check event description
+         if((desc is not None) and (self[i][I_EVENT_DESC] != desc)):
+            match = False
+            
+         # Check error phase
+         if((error is not None) and (self[i][I_ERROR_PHASE] != error)):
+            match = False
       
       return match
       
-   
+      
+   def isParamCheck(self, i):
+      """
+      Return True if the i^th row correspond to the user checking a parameter.
+      
+      Params
+      ------
+         i  - Int index for row to check
+         
+      Return
+      ------
+         boolean - True if the i^row is checking parameters
+      """
+      
+      # Default value is match = True (is checking param)
+      match = True
+      
+      if(i >= self.size):
+         match = False
+      
+      else:
+         match = ("open" in self[i][I_EVENT_DESC] and 
+            (self[i][I_EVENT_SOURCE] == EventSource.GRAPH_MONITOR or
+            self[i][I_EVENT_SOURCE] == EventSource.OX_TANK or
+            self[i][I_EVENT_SOURCE] == EventSource.OX_SECOND or
+            self[i][I_EVENT_SOURCE] == EventSource.NI_TANK or
+            self[i][I_EVENT_SOURCE] == EventSource.NI_SECOND or 
+            self[i][I_EVENT_SOURCE] == EventSource.MIXER))
+      
+      return match

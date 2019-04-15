@@ -1,34 +1,42 @@
 Notes:
 
 1) Percentage of Correct Diagnosis
-   was the percentage of the six faults occurring per block for which the first repair 
-   order sent was correct, a measure of quality of fault identification performance
+   - Was the percentage of the six faults occurring per block for which the first repair 
+     order sent was correct, a measure of quality of fault identification performance
+   * Not used for this analysis because it would yield very few samples. 
+   * Estimate: 5 people * 6 days = 30 samples total. 
    
 2) Fault Identification Time
-   time (in seconds) from appearance of the master alarm until the correct repair
-   order was issued. This measure was used to assess speed of fault identification
-   performance.
+   - Time (in seconds) from appearance of the master alarm until the correct repair
+     order was issued. This measure was used to assess speed of fault identification
+     performance.
+   * FIT = Correct Repair time - Fault time 
    
 3) Out of Target Error
-   was defined as the time (in seconds) the most critical system parameter (oxygen) 
-   was out of target range when a system fault was present, a measure of quality of 
-   the fault management.   
+   - Was defined as the time (in seconds) the most critical system parameter (oxygen) 
+     was out of target range when a system fault was present, a measure of quality of 
+     the fault management.   
+   * Not used in this analysis. The manual processes were not tested, so it is not meaningful.
    
 4) Mean Response Time
-   time (in milliseconds) to the appearance of the “communication link” icon   
+   - Time (in milliseconds) to the appearance of the “communication link” icon   
+   * 
    
-5) prospective memory performance
-   proportion of entries of carbon dioxide records that were provided within the 
-   correct time interval (i.e., full minute ±5 s)
+5) Prospective memory performance
+   - Proportion of entries of carbon dioxide records that were provided within the 
+     correct time interval (i.e., full minute ±5 s)
+   * 
    
 6) Automation Verification Time
-   time interval (in seconds) from the appearance of the master warning until
-   sending of a first repair order, regardless of whether this order was correct
+   - Time interval (in seconds) from the appearance of the master warning until
+     sending of a first repair order, regardless of whether this order was correct
+   * AVT = First Repair Time - Fault Time
    
 7) Automation Verification Sampling of Relevant Parameters
-   proportion of all system parameters accessed that, in principal, were considered 
-   useful (relevant) to cross-check the automatically generated diagnosis for a 
-   given malfunction
+   - Proportion of all system parameters accessed that, in principal, were considered 
+     useful (relevant) to cross-check the automatically generated diagnosis for a 
+     given malfunction
+   * 
    
 8) Automation Verification Sampling of Necessary Parameters
    proportion of all system parameters accessed immediately necessary to cross-check a

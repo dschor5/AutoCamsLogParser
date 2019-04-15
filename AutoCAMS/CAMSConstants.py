@@ -54,33 +54,11 @@ class EventSource():
    AFIRA_LOA_6      = "Afira_loa_6"
 
 
-#D_FLOW = {"HIGH", "MEDIUM", "STANDARD"}
-
-#ox_flow: HIGH
-#ox_flow: MEDIUM
-#ox_flow: STANDARD
-
-#ox_flow_auto: true
-#ox_flow_auto: false
-#ox_manual: 1
-#ox_manual: 0
-
-#ni_flow: HIGH
-#ni_flow: MEDIUM
-#ni_flow: STANDARD
-
-#pressure_auto: true
-#pressure_auto: false
-#pressure_manual: MANUAL_ON_INCREASE
-#pressure_manual: MANUAL_OFF
-
-#ox_open
-#ni_open
-#co_open
-#temp_open
-#humi_open
-
 class EventDesc():
+   """
+   Abstract class for descriptions corresponding to the
+   field valid values for I_EVENT_DESC in the archive. 
+   """
    OPEN           = "open"
    ICON_APPEARS   = "icon_appears"
    ICON_CONFIRMED = "confirmed"
@@ -95,36 +73,64 @@ class EventDesc():
    INJECTED       = "injected"
 
 
-# Error state
 class ErrorState():
+   """
+   Abstract class for error states corresponding to the
+   field valid values for I_ERROR_PHASE in the archive. 
+   """
    RED          = "RED"
    RED_REPAIR   = "RED_REPAIR"
    RED_NO_ERROR = "RED_NO_ERROR"
    GREEN        = "GREEN"
    GREEN_ERROR  = "GREEN_ERROR"
 
+
 class Limits():
-   CO2_RED_LOW = 0.1
-   CO2_GREEN_LOW = 0.2
-   CO2_GREEN_HIGH = 0.6
-   CO2_RED_HIGH = 0.8
+   """
+   Abstract class for limit constants. 
+   """
+   # Indexes for limits
+   RED_LOW    = 0
+   GREEN_LOW  = 1
+   GREEN_HIGH = 2
+   RED_HIGHT  = 3
 
-   O2_RED_LOW = 19.0
-   O2_GREEN_LOW = 19.6
-   O2_GREEN_HIGH = 20
-   O2_RED_HIGH = 20.5
+   # CO2 limits in ? units
+   CO2 = [
+      0.1, # RED_LOW
+      0.2, # GREEN_LOW
+      0.6, # GREEN_HIGH
+      0.8  # RED_HIGHT
+      ]
 
-   P_RED_LOW = 0.970
-   P_GREEN_LOW = 0.990
-   P_GREEN_HIGH = 1.025
-   P_RED_HIGH = 1.040
+   # O2 limits in ? units
+   O2 = [
+      19.0, # RED_LOW
+      19.6, # GREEN_LOW
+      20.0, # GREEN_HIGH
+      20.5  # RED_HIGHT
+      ]
 
-   T_RED_LOW = 18.5
-   T_GREEN_LOW = 19.5
-   T_GREEN_HIGH = 22.0
-   T_RED_HIGH = 23.0
+   # Pressure limits in ? units
+   P = [
+      0.970, # RED_LOW
+      0.990, # GREEN_LOW
+      1.025, # GREEN_HIGH
+      1.040  # RED_HIGHT
+      ]
 
-   H_RED_LOW = 36.5
-   H_GREEN_LOW = 38.0
-   H_GREEN_HIGH = 42.0
-   H_RED_HIGH = 44.0
+   # Temperature limits in degree Celsius
+   T = [
+      18.5, # RED_LOW
+      19.5, # GREEN_LOW
+      22.0, # GREEN_HIGH
+      23.0  # RED_HIGHT
+      ]
+
+   # Humidity limits in relative percent humidity
+   CO2 = [
+      36.5, # RED_LOW
+      38.0, # GREEN_LOW
+      42.0, # GREEN_HIGH
+      44.0  # RED_HIGHT
+      ]
