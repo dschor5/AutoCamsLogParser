@@ -58,6 +58,7 @@ for iDir in range(len(MISSION_DIR)):
          
          # Skip file if the script name is invalid. 
          if(testFile not in SESSION_SCRIPT):
+            print("--- ERROR: File not found.")
             continue
          
          # Add the current mission to the prefix.
