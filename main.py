@@ -68,7 +68,8 @@ for iDir in range(len(MISSION_DIR)):
          
          # Add the current mission to the prefix.
          prefix = [iDir] + SESSION_SCRIPT[testFile]
-         
+         prefix[1] += (iDir * len(SUBJECT_DIR)) # Make each user unique
+
          # Process current archive
          output = archive.parseData(prefix)
          fp.write(output)

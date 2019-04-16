@@ -244,11 +244,11 @@ class Archive(np.ndarray):
             else:
                output += "{0:.3f}".format(0.0) + COMMA
                
-            # Logging task
+            # Logging task (skip comma for last variable)
             if(logTotal > 0):
-               output += "{0:.3f}".format(float(logTotal - logMissed) / logTotal) + COMMA
+               output += "{0:.3f}".format(float(logTotal - logMissed) / logTotal) 
             else:
-               output += "{0:.3f}".format(0.0) + COMMA
+               output += "{0:.3f}".format(0.0) 
             
             output += "\n"
             
