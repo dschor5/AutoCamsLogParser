@@ -50,6 +50,11 @@ for iDir in range(len(MISSION_DIR)):
       
       # Iterate through all the files in a folder
       for filename in os.listdir(folder):
+         
+         # Skip invalid files
+         if(".txt" not in filename):
+            continue
+         
          print("- Parsing " + folder + filename)
          
          # Read the archive and determine which file it belongs to. 
