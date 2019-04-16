@@ -30,26 +30,27 @@ I_LOG_TYPE     = 'LOG_TYPE'       # Event: CAMS_SYSTEM (periodic) or OPERATOR (a
 I_OSMET_FINE   = 'OSMET_FINE'     # 
 
 PARAMS_NECESSARY = {
-   "OXYGEN_VALVE_LEAK"               : set(["ox_open", "ox_tank_display", "ox_second"]),
-   "OXYGEN_VALVE_BLOCK"              : set(["ox_open", "ox_tank_display", "ox_second"]),
-   "OXYGEN_VALVE_STUCK_OPEN"         : set(["ox_open", "ox_tank_display", "ox_second", "ni_open"]),
-   "NITROGEN_VALVE_LEAK"             : set(["ni_open", "ni_tank_display", "ni_second"]),
-   "NITROGEN_VALVE_BLOCK"            : set(["ni_open", "ni_tank_display", "ni_second"]),
-   "NITROGEN_VALVE_STUCK_OPEN"       : set(["ni_open", "ni_tank_display", "ni_second", "ox_open"]),
-   "OXYGEN_SENSOR_STARTS_UPPER_TH"   : set(["ox_open", "ox_tank_display", "ni_open"]),
-   "OXYGEN_SENSOR_STARTS_LOWER_TH"   : set(["ox_open", "ox_tank_display", "ni_open"]),
-   "PRESSURE_SENSOR_STARTS_UPPER_TH" : set(["ox_open", "ni_tank_display", "ni_open"]),
-   "PRESSURE_SENSOR_STARTS_LOWER_TH" : set(["ox_open", "ni_tank_display", "ni_open"]),
-   "MIXER_BLOCK"                     : set(["ni_open", "ox_open", "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer"])
+   "OXYGEN_VALVE_LEAK"               : set(["ox_tank_display", "ox_open", "ox_second", "possible_flow"]),
+   "OXYGEN_VALVE_BLOCK"              : set(["ox_tank_display", "ox_open", "ox_second", "possible_flow"]),
+   "OXYGEN_VALVE_STUCK_OPEN"         : set(["ox_tank_display", "ni_tank_display", "ox_open", "ox_second", "possible_flow"]),
+   "NITROGEN_VALVE_LEAK"             : set(["ni_tank_display", "ni_open", "ni_second", "possible_flow"]),
+   "NITROGEN_VALVE_BLOCK"            : set(["ni_tank_display", "ni_open", "ni_second", "possible_flow"]),
+   "NITROGEN_VALVE_STUCK_OPEN"       : set(["ni_tank_display", "ox_tank_display", "ni_open", "ni_second", "possible_flow"]),
+   "OXYGEN_SENSOR_STARTS_UPPER_TH"   : set(["ox_tank_display", "ni_tank_display", "ox_open", "ox_second", "possible_flow"]),
+   "OXYGEN_SENSOR_STARTS_LOWER_TH"   : set(["ox_tank_display", "ni_tank_display", "ox_open", "ox_second", "possible_flow"]),
+   "PRESSURE_SENSOR_STARTS_UPPER_TH" : set(["ni_tank_display", "ox_tank_display", "ni_open", "ni_second", "possible_flow"]),
+   "PRESSURE_SENSOR_STARTS_LOWER_TH" : set(["ni_tank_display", "ox_tank_display", "ni_open", "ni_second", "possible_flow"]),
+   "MIXER_BLOCK"                     : set(["ox_tank_display", "ni_tank_display", "ox_second", "ni_second", "mixer"])
    }
 
 PARAMS_RELEVANT = set([
-   "ni_open", "ox_open", "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer"
+   "ni_open", "ox_open", "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer", "possible_flow"
    ])
    
 PARAMS_TOTAL = set([
    "ni_open", "ox_open", "co_open", "temp_open", "humid_open", 
-   "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer"
+   "ox_tank_display", "ox_second", "ni_second", "ni_tank_display", "mixer",
+   "possible_flow"
    ])
 
 # Differentiate whether it was a periodic task by the software or an aperiodic task 

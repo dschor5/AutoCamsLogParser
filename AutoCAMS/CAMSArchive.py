@@ -183,6 +183,8 @@ class Archive(np.ndarray):
                paramsVerified.update([curr[I_EVENT_SOURCE]])
             if(curr[I_EVENT_SOURCE] == EventSource.GRAPH_MONITOR):
                paramsVerified.update([curr[I_EVENT_DESC]])
+            if(curr[I_EVENT_SOURCE] == EventSource.POSSIBLE_FLOW):
+               paramsVerified.update([EventSource.POSSIBLE_FLOW])
          
          # Connection checks
          if(iRed is not None):
