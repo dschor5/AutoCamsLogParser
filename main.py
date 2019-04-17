@@ -35,7 +35,13 @@ SESSION_SCRIPT = {
    "PTRUNNFW.xml" : [3, 6, FAULT_FALSE],
 }
 
-fp = open("./output.txt", "w")
+NUM_SESSIONS = 6
+
+fp  = open("./output.txt", "w")
+fps = []
+for i in range(0, NUM_SESSIONS):
+   fps.append(open("./output_session_" + str(i) + ".txt", "w"))
+
 
 # Iterate through each mission and subject
 for iDir in range(len(MISSION_DIR)):
@@ -66,14 +72,22 @@ for iDir in range(len(MISSION_DIR)):
             print("--- ERROR: File not found.")
             continue
          
-         # Add the current mission to the prefix.
+         
+         # Process current archive and write to general file
          prefix = [iDir] + SESSION_SCRIPT[testFile]
-         prefix[1] += (iDir * len(SUBJECT_DIR)) # Make each user unique
-
-         # Process current archive
+         prefix[1] += (iDir * len(SUBJECT_DIR))       # Make each user unique
          output = archive.parseData(prefix)
          fp.write(output)
          fp.flush()
+         
+         # Write output to session specific file
+         prefix = [iDir, SESSION_SCRIPT[testFile][0]]
+         prefix[1] += (iDir * len(SUBJECT_DIR))
+         output = archive.parseData(prefix)
+         fps[SESSION_SCRIPT[testFile][1]-1].write(output)
+         fps[SESSION_SCRIPT[testFile][1]-1].flush()
    
 fp.close()
+for i in range(0, NUM_SESSIONS):
+   fps[i].close()
       
