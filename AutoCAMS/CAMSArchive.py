@@ -115,7 +115,7 @@ class Archive(np.ndarray):
       return self.__script
 
       
-   def parseData(self, prefix):
+   def parseData(self, prefix, skipFault=False):
       """
       <INSERT DESCRIPTION>
       
@@ -205,52 +205,55 @@ class Archive(np.ndarray):
          # Find index of GREEN (finished processing fault -> record entry)
          if(EventDesc.PHASE_CHANGE == curr[I_EVENT_DESC] and ErrorState.GREEN == curr[I_ERROR_PHASE]):
             
-            # Capture output
-            output += COMMA.join(map(str, prefix)) + COMMA
-            
-            # Fault index
-            output += str(faultIndex) + COMMA
-            
-            # Has fault?
-            if(faultInjected == faultDetected):
-               output += "0" + COMMA
+            if(True == skipFault and faultInjected != faultDetected):
+               print("Skipping...")
             else:
-               output += "1" + COMMA
+               # Capture output
+               output += COMMA.join(map(str, prefix)) + COMMA
+            
+               # Fault index
+               output += str(faultIndex) + COMMA
+            
+               # Has fault?
+               if(faultInjected == faultDetected):
+                  output += "0" + COMMA
+               else:
+                  output += "1" + COMMA
                
-            # Number of repair orders set
-            output += str(len(repairOrders)) + COMMA
+               # Number of repair orders set
+               output += str(len(repairOrders)) + COMMA
             
-            # Fault Identification Time (FIT)
-            deltaTime = self[iCorrectRepair][I_OSMET] - self[iRed][I_OSMET]
-            output += str(deltaTime) + COMMA 
+               # Fault Identification Time (FIT)
+               deltaTime = self[iCorrectRepair][I_OSMET] - self[iRed][I_OSMET]
+               output += str(deltaTime) + COMMA 
             
-            # Automation Verification Time (AVT)
-            deltaTime = self[iFirstRepair][I_OSMET] - self[iRed][I_OSMET]
-            output += str(deltaTime) + COMMA
+               # Automation Verification Time (AVT)
+               deltaTime = self[iFirstRepair][I_OSMET] - self[iRed][I_OSMET]
+               output += str(deltaTime) + COMMA
             
-            # Automation Verification Sampling of Relevant Parameters (AVS-RP)
-            limitSet = paramsVerified.intersection(PARAMS_RELEVANT)
-            temp = float(len(limitSet)) / len(PARAMS_RELEVANT)
-            output += "{0:.3f}".format(temp) + COMMA
+               # Automation Verification Sampling of Relevant Parameters (AVS-RP)
+               limitSet = paramsVerified.intersection(PARAMS_RELEVANT)
+               temp = float(len(limitSet)) / len(PARAMS_RELEVANT)
+               output += "{0:.3f}".format(temp) + COMMA
             
-            # Automation Verification Sampling of Necessary Parameters (AVS-NP)
-            limitSet = paramsVerified.intersection(PARAMS_NECESSARY[faultInjected])
-            temp = float(len(limitSet)) / len(PARAMS_NECESSARY[faultInjected])
-            output += "{0:.3f}".format(temp) + COMMA
+               # Automation Verification Sampling of Necessary Parameters (AVS-NP)
+               limitSet = paramsVerified.intersection(PARAMS_NECESSARY[faultInjected])
+               temp = float(len(limitSet)) / len(PARAMS_NECESSARY[faultInjected])
+               output += "{0:.3f}".format(temp) + COMMA
             
-            # Connection check
-            if(conCheckCount > 0):
-               output += "{0:.3f}".format(float(conCheckTotalTime) / conCheckCount) + COMMA
-            else:
-               output += "{0:.3f}".format(0.0) + COMMA
+               # Connection check
+               if(conCheckCount > 0):
+                  output += "{0:.3f}".format(float(conCheckTotalTime) / conCheckCount) + COMMA
+               else:
+                  output += "{0:.3f}".format(0.0) + COMMA
                
-            # Logging task (skip comma for last variable)
-            if(logTotal > 0):
-               output += "{0:.3f}".format(float(logTotal - logMissed) / logTotal) 
-            else:
-               output += "{0:.3f}".format(0.0) 
+               # Logging task (skip comma for last variable)
+               if(logTotal > 0):
+                  output += "{0:.3f}".format(float(logTotal - logMissed) / logTotal) 
+               else:
+                  output += "{0:.3f}".format(0.0) 
             
-            output += "\n"
+               output += "\n"
             
             # Reset all variables
             iRed              = None

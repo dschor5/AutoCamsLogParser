@@ -83,7 +83,7 @@ for iDir in range(len(MISSION_DIR)):
          # Write output to session specific file
          prefix = [iDir, SESSION_SCRIPT[testFile][0]]
          prefix[1] += (iDir * len(SUBJECT_DIR))
-         output = archive.parseData(prefix)
+         output = archive.parseData(prefix, True)
          fps[SESSION_SCRIPT[testFile][1]-1].write(output)
          fps[SESSION_SCRIPT[testFile][1]-1].flush()
    
